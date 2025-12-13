@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FacePhoto;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class FacePhotoController extends Controller
@@ -52,7 +53,7 @@ class FacePhotoController extends Controller
             ],
         ], $existing ? 200 : 201);
     }
-            public function show(Request $request)
+    public function show(Request $request)
     {
         $user = $request->user();
 
@@ -92,6 +93,78 @@ class FacePhotoController extends Controller
             'message' => 'Face embedding saved.',
             'user' => $user->fresh(),
         ]);
+    }
+
+    public function registerFace(Request $request)
+    {
+        $data = $request->validate([
+            'images' => ['required', 'array', 'size:5'],
+            'images.*' => ['file', 'image', 'max:5120'],
+        ]);
+
+        $baseUrl = rtrim(config('services.face_service.base_url'), '/');
+
+        $http = Http::timeout(60)->asMultipart();
+        foreach ($data['images'] as $image) {
+            $http = $http->attach(
+                'images',
+                file_get_contents($image->getRealPath()),
+                $image->getClientOriginalName(),
+            );
+        }
+
+        $response = $http->post("{$baseUrl}/encode/multiple-image", [
+            'person_name' => (string) $request->user()->id,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Face service error',
+                'details' => $response->json() ?? $response->body(),
+            ], $response->status() ?: 502);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Encoded via face service',
+            'data' => $response->json(),
+        ], $response->status());
+    }
+
+    public function verifyWithFaceService(Request $request)
+    {
+        $data = $request->validate([
+            'person_name' => ['required', 'string'],
+            'file' => ['required', 'file', 'image', 'max:5120'],
+        ]);
+
+        $baseUrl = rtrim(config('services.face_service.base_url'), '/');
+
+        $response = Http::timeout(60)
+            ->asMultipart()
+            ->attach(
+                'file',
+                file_get_contents($data['file']->getRealPath()),
+                $data['file']->getClientOriginalName(),
+            )
+            ->post("{$baseUrl}/verify", [
+                'person_name' => $data['person_name'],
+            ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Face service error',
+                'details' => $response->json() ?? $response->body(),
+            ], $response->status() ?: 502);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Verification completed via face service',
+            'data' => $response->json(),
+        ], $response->status());
     }
 }
 
