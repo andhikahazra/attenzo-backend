@@ -97,13 +97,24 @@ class FacePhotoController extends Controller
 
     public function registerFace(Request $request)
     {
+        $user = $request->user();
+
         $data = $request->validate([
             'images' => ['required', 'array', 'size:5'],
             'images.*' => ['file', 'image', 'max:5120'],
         ]);
 
-        $baseUrl = rtrim(config('services.face_service.base_url'), '/');
+        // Simpan foto ke storage
+        $existing = FacePhoto::where('user_id', $user->id)->first();
+        $oldPaths = $existing?->photo_path ?? [];
 
+        $storedPaths = [];
+        foreach ($data['images'] as $image) {
+            $storedPaths[] = $image->store("face-photos/{$user->id}", 'public');
+        }
+
+        // Panggil face service
+        $baseUrl = rtrim(config('services.face_service.base_url'), '/');
         $http = Http::timeout(60)->asMultipart();
         foreach ($data['images'] as $image) {
             $http = $http->attach(
@@ -114,10 +125,13 @@ class FacePhotoController extends Controller
         }
 
         $response = $http->post("{$baseUrl}/encode/multiple-image", [
-            'person_name' => (string) $request->user()->id,
+            'person_name' => (string) $user->id,
         ]);
 
+        // Jika face service gagal, rollback foto baru
         if ($response->failed()) {
+            Storage::disk('public')->delete($storedPaths);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Face service error',
@@ -125,10 +139,28 @@ class FacePhotoController extends Controller
             ], $response->status() ?: 502);
         }
 
+        // Hapus foto lama setelah sukses
+        if (! empty($oldPaths)) {
+            Storage::disk('public')->delete($oldPaths);
+        }
+
+        $record = FacePhoto::updateOrCreate(
+            ['user_id' => $user->id],
+            ['photo_path' => $storedPaths]
+        );
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Encoded via face service',
+            'message' => 'Encoded via face service & photos stored.',
             'data' => $response->json(),
+            'photos' => [
+                'user_id' => $user->id,
+                'photo_path' => $record->photo_path,
+                'photo_urls' => array_map(
+                    fn (string $path) => Storage::disk('public')->url($path),
+                    $record->photo_path
+                ),
+            ],
         ], $response->status());
     }
 
