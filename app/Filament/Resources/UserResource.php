@@ -31,7 +31,9 @@ class UserResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('password')
                             ->password()
-                            ->required()
+                            ->required(fn ($context) => $context === 'create')
+                            ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                            ->dehydrated(fn ($state) => filled($state))
                             ->maxLength(255),
                         Forms\Components\Select::make('work_location_id')
                             ->label('Work Location')
