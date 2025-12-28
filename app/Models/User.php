@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'face_embed', // tambahkan kolom embed
+        'work_location_id',
     ];
 
     /**
@@ -60,5 +61,13 @@ class User extends Authenticatable
     public function attendanceLogs()
     {
         return $this->hasMany(AttendanceLog::class);
+    }
+
+    /**
+     * Relasi ke WorkLocation
+     */
+    public function workLocation()
+    {
+        return $this->belongsTo(WorkLocation::class);
     }
 }

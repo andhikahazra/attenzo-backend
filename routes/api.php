@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacePhotoController;
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -17,4 +18,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/attendance', [AttendanceController::class, 'store']);
     Route::get('/attendance', [AttendanceController::class, 'history']);
+
+    Route::get('/locations', [LocationController::class, 'index']);
 });

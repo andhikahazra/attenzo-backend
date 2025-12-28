@@ -33,6 +33,10 @@ class UserResource extends Resource
                             ->password()
                             ->required()
                             ->maxLength(255),
+                        Forms\Components\Select::make('work_location_id')
+                            ->label('Work Location')
+                            ->relationship('workLocation', 'name')
+                            ->required(),
                         // Forms\Components\Textarea::make('face_embed')
                         //     ->label('Face Embed')
                         //     ->disabled(), // tidak bisa diedit manual
@@ -47,6 +51,7 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
+                Tables\Columns\TextColumn::make('workLocation.name')->label('Work Location')->searchable(),
                 // Tables\Columns\TextColumn::make('face_embed'),
                 // Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
                 // Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable(),

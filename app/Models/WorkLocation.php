@@ -16,4 +16,12 @@ class WorkLocation extends Model
         'longitude',
         'allowed_radius_meters',
     ];
+
+    /**
+     * Relasi ke User
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
