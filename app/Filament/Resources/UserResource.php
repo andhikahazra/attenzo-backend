@@ -33,9 +33,9 @@ class UserResource extends Resource
                             ->password()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('face_embed')
-                            ->label('Face Embed')
-                            ->disabled(), // tidak bisa diedit manual
+                        // Forms\Components\Textarea::make('face_embed')
+                        //     ->label('Face Embed')
+                        //     ->disabled(), // tidak bisa diedit manual
                     ])
                     ->columns(1), // 1 kolom per baris
             ]);
@@ -47,7 +47,7 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\TextColumn::make('face_embed'),
+                // Tables\Columns\TextColumn::make('face_embed'),
                 // Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
                 // Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable(),
             ])
