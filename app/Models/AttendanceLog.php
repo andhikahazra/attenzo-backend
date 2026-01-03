@@ -16,10 +16,17 @@ class AttendanceLog extends Model
         'attendance_date',
         'attendance_time',
         'type',
+        'attendance_status',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+        public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
 }

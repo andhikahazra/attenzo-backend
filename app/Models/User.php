@@ -70,4 +70,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(WorkLocation::class);
     }
+
+        public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
 }

@@ -15,7 +15,7 @@ use Dotswan\MapPicker\Fields\Map;
 class WorkLocationResource extends Resource
 {
     protected static ?string $model = WorkLocation::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
 
     public static function form(Form $form): Form
     {
