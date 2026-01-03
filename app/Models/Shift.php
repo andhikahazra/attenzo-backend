@@ -16,6 +16,8 @@ class Shift extends Model
         'early_checkin_tolerance',
         'late_tolerance',
         'early_leave_tolerance',
+        'max_checkin_hours',
+        'max_checkout_hours',
     ];
 
     /*
