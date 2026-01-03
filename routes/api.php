@@ -24,5 +24,8 @@ Route::middleware('auth:api')->group(function () {
     // ⭐ STATUS TOMBOL MOBILE
     Route::get('/attendance/today-status', [AttendanceController::class, 'todayStatus']);
 
+    // ⭐ GET SHIFT USER
+    Route::get('/shift', [AttendanceController::class, 'getShift']);
+
     Route::get('/locations', [LocationController::class, 'index']);
 });

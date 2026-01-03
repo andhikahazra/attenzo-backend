@@ -220,6 +220,45 @@ class AttendanceController extends Controller
     }
 
     /**
+     * AMBIL DATA SHIFT USER
+     */
+    public function getShift(Request $request)
+    {
+        $user = $request->user();
+        
+        if (!$user->shift_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User tidak memiliki shift.',
+            ], 404);
+        }
+
+        $shift = Shift::find($user->shift_id);
+        
+        if (!$shift) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Shift tidak ditemukan.',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => $shift->id,
+                'name' => $shift->name,
+                'start_time' => $shift->start_time,
+                'end_time' => $shift->end_time,
+                'early_checkin_tolerance' => $shift->early_checkin_tolerance,
+                'late_tolerance' => $shift->late_tolerance,
+                'early_leave_tolerance' => $shift->early_leave_tolerance,
+                'max_checkin_hours' => $shift->max_checkin_hours,
+                'max_checkout_hours' => $shift->max_checkout_hours,
+            ],
+        ]);
+    }
+
+    /**
      * FACE SERVICE
      */
     protected function verifyWithFaceService($file, string $personId): array
