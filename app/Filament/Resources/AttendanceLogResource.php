@@ -70,6 +70,7 @@ class AttendanceLogResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('User')->searchable(),
                 Tables\Columns\TextColumn::make('status')->label('Status'),
+                Tables\Columns\TextColumn::make('attendance_status')->label('Attendance Status'),
                 Tables\Columns\ImageColumn::make('photo_path')
                     ->disk('public')
                     ->label('Photo'),
