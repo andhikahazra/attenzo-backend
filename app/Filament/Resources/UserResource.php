@@ -39,6 +39,11 @@ class UserResource extends Resource
                             ->label('Work Location')
                             ->relationship('workLocation', 'name')
                             ->required(),
+                        Forms\Components\Select::make('shift_id')
+                            ->label('Shift Kerja')
+                            ->relationship('shift', 'name')
+                            ->required(),
+
                         // Forms\Components\Textarea::make('face_embed')
                         //     ->label('Face Embed')
                         //     ->disabled(), // tidak bisa diedit manual
@@ -54,6 +59,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
                 Tables\Columns\TextColumn::make('workLocation.name')->label('Work Location')->searchable(),
+                Tables\Columns\TextColumn::make('shift.name')
+                ->label('Shift')
+                ->sortable(),
+
                 // Tables\Columns\TextColumn::make('face_embed'),
                 // Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
                 // Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable(),

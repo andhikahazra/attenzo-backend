@@ -71,15 +71,6 @@ class ShiftResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                     ]),
-
-                Forms\Components\Section::make('Pengaturan Shift')
-                    ->schema([
-                        Forms\Components\Toggle::make('is_night_shift')
-                            ->label('Shift Malam')
-                            ->helperText('Aktifkan jika shift melewati tengah malam')
-                            ->default(false)
-                            ->columnSpanFull(),
-                    ]),
             ])
             ->columns(1); // 🔥 1 kolom per baris
     }
@@ -112,11 +103,7 @@ class ShiftResource extends Resource
                 Tables\Columns\TextColumn::make('early_leave_tolerance')
                     ->label('Pulang Awal (Menit)')
                     ->sortable(),
-
-                Tables\Columns\IconColumn::make('is_night_shift')
-                    ->label('Shift Malam')
-                    ->boolean(),
-
+                    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')
                     ->sortable()
