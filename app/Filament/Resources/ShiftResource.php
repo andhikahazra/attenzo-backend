@@ -71,6 +71,28 @@ class ShiftResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                     ]),
+
+                Forms\Components\Section::make('Batas Maksimal Absensi (Jam)')
+                    ->description('Batas maksimal waktu absensi setelah jam shift (dalam jam)')
+                    ->schema([
+                        Forms\Components\TextInput::make('max_checkin_hours')
+                            ->label('Maksimal Check-in Setelah Jam Masuk')
+                            ->helperText('Berapa jam maksimal setelah jam masuk untuk bisa check-in')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(2)
+                            ->required()
+                            ->columnSpanFull(),
+
+                        Forms\Components\TextInput::make('max_checkout_hours')
+                            ->label('Maksimal Check-out Setelah Jam Pulang')
+                            ->helperText('Berapa jam maksimal setelah jam pulang untuk bisa check-out')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(2)
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
             ])
             ->columns(1); // 🔥 1 kolom per baris
     }
@@ -102,6 +124,14 @@ class ShiftResource extends Resource
 
                 Tables\Columns\TextColumn::make('early_leave_tolerance')
                     ->label('Pulang Awal (Menit)')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('max_checkin_hours')
+                    ->label('Max Check-in (Jam)')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('max_checkout_hours')
+                    ->label('Max Check-out (Jam)')
                     ->sortable(),
                     
                 Tables\Columns\TextColumn::make('created_at')
