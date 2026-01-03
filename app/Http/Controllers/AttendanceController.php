@@ -155,23 +155,49 @@ class AttendanceController extends Controller
             ->where('type', 'check_out')
             ->first();
 
+        // TAMBAHAN: Cek shift user untuk validasi waktu maksimal
+        $shift = Shift::find($user->shift_id);
+        $currentTime = now();
+        
+        // Default values
+        $canCheckIn = ! $checkIn;
+        $canCheckOut = $checkIn && ! $checkOut;
+        
+        // VALIDASI WAKTU MAKSIMAL CHECK-IN
+        if ($canCheckIn && $shift) {
+            $maxCheckInTime = Carbon::createFromFormat('H:i:s', $shift->start_time)
+                ->setDate($currentTime->year, $currentTime->month, $currentTime->day)
+                ->addHours($shift->max_checkin_hours ?? 2);
+            
+            if ($currentTime->gt($maxCheckInTime)) {
+                $canCheckIn = false; // Sudah lewat waktu maksimal check-in
+            }
+        }
+        
+        // VALIDASI WAKTU MAKSIMAL CHECK-OUT
+        if ($canCheckOut && $shift) {
+            $maxCheckOutTime = Carbon::createFromFormat('H:i:s', $shift->end_time)
+                ->setDate($currentTime->year, $currentTime->month, $currentTime->day)
+                ->addHours($shift->max_checkout_hours ?? 2);
+            
+            if ($currentTime->gt($maxCheckOutTime)) {
+                $canCheckOut = false; // Sudah lewat waktu maksimal check-out
+            }
+        }
+
         return response()->json([
             'date' => $today,
-
-            'can_check_in' => ! $checkIn,
-            'can_check_out' => $checkIn && ! $checkOut,
-
+            'can_check_in' => $canCheckIn,
+            'can_check_out' => $canCheckOut,
             'status' => match (true) {
                 ! $checkIn => 'not_checked_in',
                 $checkIn && ! $checkOut => 'checked_in',
                 default => 'completed',
             },
-
             'check_in' => $checkIn ? [
                 'time' => $checkIn->attendance_time,
                 'attendance_status' => $checkIn->attendance_status,
             ] : null,
-
             'check_out' => $checkOut ? [
                 'time' => $checkOut->attendance_time,
                 'attendance_status' => $checkOut->attendance_status,
